@@ -4,6 +4,8 @@
 <title>Kas Keluarga</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
 :root{--bg:#050816;--p:#0d1633;--l:#1d2d63;--t:#e6f1ff;--m:#8fa3d1;--c:#00e5ff;--g:#b967ff;--ok:#2cff9a;--bad:#ff3d71;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -22,7 +24,7 @@ button{cursor:pointer;background:linear-gradient(90deg,#00b8d4,#7c3aed);border:0
 .tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px}
 .tabs button{background:var(--p);border:1px solid var(--l);white-space:nowrap;color:var(--m)}
 .tabs button.a{color:#001018;background:var(--c);box-shadow:0 0 14px #00e5ff88;border-color:var(--c)}
-.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:12px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px;margin-bottom:12px}.g.s{grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))}.g.c{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
 .cd{background:linear-gradient(160deg,#0f1b45cc,#0a1230cc);border:1px solid var(--l);border-radius:14px;padding:14px;box-shadow:0 0 18px #00e5ff14 inset}
 .cd .k{color:var(--m);font-size:13px}.cd .v{font:700 20px Orbitron,sans-serif;margin-top:4px}
 .in{color:var(--ok)}.out{color:var(--bad)}.cy{color:var(--c)}
@@ -39,59 +41,123 @@ td input{width:100%;padding:5px 7px}
 .f{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
 .x1{background:none;color:var(--bad);padding:2px 8px;border:1px solid var(--bad)}
 .n{color:var(--m);font-size:13px;margin:8px 0}
-</style></head><body><div class="w">
+.cd{min-width:0}
+.f input,.f select{width:100%}
+.tabs{scrollbar-width:none;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:#050816ee;padding:6px 0;backdrop-filter:blur(8px)}
+.tabs::-webkit-scrollbar{display:none}
+.cv.t{height:400px}.cv.d{height:320px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.f2 input,.f2 select,.sq{width:100%}.sq{margin-bottom:8px}
+.il{max-height:50vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.it{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#0a1230;border:1px solid var(--l);border-radius:12px;padding:10px 12px}
+.it[hidden]{display:none}.it.on{border-color:var(--c);box-shadow:0 0 10px #00e5ff33}
+.it b{font-weight:600}.it .n{margin:2px 0 0}
+.sp{display:flex;align-items:center;gap:6px;flex:none}
+.sp button{width:34px;height:34px;padding:0;border-radius:50%;font-size:18px;line-height:1}
+.sp input{width:56px;text-align:center;padding:6px 4px}
+.add{flex:none;background:none;border:1px solid var(--c);color:var(--c);padding:6px 12px}
+.bk{position:sticky;bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding:10px 12px;background:#0b1538;border:1px solid var(--c);border-radius:12px;box-shadow:0 0 16px #00e5ff33}
+.bk button:disabled{opacity:.4;cursor:not-allowed}
+.tabs{overflow:visible}
+.nav{width:100%;padding:12px 44px 12px 16px;font:700 15px Orbitron,system-ui,sans-serif;letter-spacing:.06em;color:var(--c);background:#0d1633 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%2300e5ff' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center;-webkit-appearance:none;appearance:none;border:1px solid var(--c);border-radius:12px;box-shadow:0 0 14px #00e5ff44}
+.nav option{background:#0d1633;color:#e6f1ff;font-family:Rajdhani,system-ui,sans-serif;font-size:16px}
+@media(max-width:640px){
+.w{padding:10px}h1{font-size:16px}
+header{flex-direction:column;align-items:flex-start}
+.cd{padding:12px}.cd .v{font-size:17px}
+.f{grid-template-columns:1fr 1fr}.f button{grid-column:1/-1;padding:10px}
+.f input[id=fn]{grid-column:1/-1}
+table.st{min-width:0}
+.st tr:first-child{display:none}
+.st tr{display:block;background:#0a1230;border:1px solid var(--l);border-radius:12px;padding:8px 12px;margin-bottom:8px}
+.st td{display:flex;justify-content:space-between;align-items:center;gap:12px;border:0;padding:4px 0;text-align:right}
+.st td::before{content:attr(data-label);color:var(--m);font-size:13px;text-align:left;flex:none}
+.st td:not([data-label]){justify-content:flex-end}
+.st td[colspan]{justify-content:flex-start}
+.st td input{width:55%}
+.st .bar{flex:1;max-width:55%}
+}
+[hidden]{display:none!important}
+#lg{max-width:360px;margin:12vh auto}#lg input,#lg button{width:100%;margin-bottom:10px}
+</style></head><body><div class="w"><div id=lg hidden><div class=cd><h2>KODE KELUARGA</h2><div class=n>Masukkan kode yang sama di HP suami dan istri (minimal 12 karakter). Rahasiakan kodenya.</div><input id=em placeholder="Kode keluarga" autocomplete=off><button onclick="login()">Masuk</button><div id=le class=n></div></div></div>
 <header><div><h1>◈ KAS KELUARGA</h1><div id="clk"></div></div>
-<div><span id="lv" class="live">● MODE LOKAL</span> <input type="month" id="mon"></div></header>
+<div><span id="lv" class="live">● OFFLINE</span> <button class=x1 onclick="logout()">Keluar</button> <input type="month" id="mon"></div></header>
 <div id="app"></div></div>
 <script>
-const C=["Kontrakan","Makan","Wisuda","Bensin & Servis Motor","Beras, Minyak, Gas, Telur","Listrik","Air & Sampah","Kesehatan","Sedekah","Keperluan Lain-lain","Dana Darurat","Nabung"];
-const B0=[1500000,1500000,300000,300000,600000,200000,100000,200000,150000,300000,300000,550000];
-const I=["Gaji","Bonus","Usaha","Lainnya"],T=["Ringkasan","Pemasukan","Pengeluaran","Makan","Anggaran"];
-const COL=["#00e5ff","#b967ff","#2cff9a","#ff3d71","#ffd166","#4d7cff","#ff8c42","#7cf5ff","#ff6bd6","#9dff6b","#c0a3ff","#ffa3b5"];
+const C=["Kontrakan","Makan","Wisuda","Bensin & Servis Motor","Beras, Minyak, Gas, Telur","Listrik","Air & Sampah","Kamar Mandi","Kesehatan","Sedekah","Keperluan Lain-lain","Dana Darurat","Nabung"];
+const B0=[1500000,1500000,300000,300000,600000,200000,100000,100000,200000,150000,200000,300000,550000];
+const I=["Gaji","Bonus","Usaha","Lainnya"],T=["Ringkasan","Pemasukan","Pengeluaran","Makan","Kamar Mandi","Anggaran"];
+const COL=["#00e5ff","#b967ff","#2cff9a","#ff3d71","#ffd166","#4d7cff","#ff8c42","#7cf5ff","#ff6bd6","#7cffcb","#9dff6b","#c0a3ff","#ffa3b5"];
 const rp=n=>"Rp "+Math.round(n).toLocaleString("id-ID");
 const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let S,doc,mon=today().slice(0,7),tab="Ringkasan",fcat="Semua",ch=[];
 const def=()=>({gaji:6000000,b:Object.fromEntries(C.map((c,i)=>[c,B0[i]])),
 tx:[{id:1,d:mon+"-01",t:"in",c:"Gaji",n:"Gaji bulanan",a:6000000}],
-p:[["Beras premium","kg",15500],["Minyak goreng","liter",18000],["Telur ayam","kg",29000],["Gula pasir","kg",18000],["Bawang merah","kg",38000],["Bawang putih","kg",38000],["Cabai rawit merah","kg",55000],["Daging ayam","kg",38000],["Tempe","papan",6000]].map(x=>({n:x[0],u:x[1],p:x[2],d:""}))});
+p:[["Beras premium","kg",15500],["Minyak goreng","liter",18000],["Telur ayam","kg",29000],["Gula pasir","kg",18000],["Bawang merah","kg",38000],["Bawang putih","kg",38000],["Cabai rawit merah","kg",55000],["Daging ayam","kg",38000],["Tempe","papan",6000],["Wortel","kg",14000],["Tahu","bungkus",5000]].map(x=>({n:x[0],u:x[1],p:x[2],d:""}))});
 const bud=c=>c==="Sedekah"?S.gaji*.025:S.b[c];
-async function save(){try{if(doc)await doc.set(S);else localStorage.setItem("kk",JSON.stringify(S))}catch(e){}}
+const KM=[["Sabun mandi","pcs",4500],["Sampo","botol",22000],["Pasta gigi (odol)","pcs",12000],["Sikat gigi","pcs",8000],["Sabun cuci tangan","botol",12000],["Tisu toilet","roll",6000],["Detergen","bungkus",15000],["Pembersih kamar mandi","botol",14000]];
+const CART={},Q={};let FD="";
+function mig(x){x.tx=x.tx||[];x.b=x.b||{};if(x.b["Kamar Mandi"]==null)x.b["Kamar Mandi"]=100000;x.pl=x.pl||{Makan:x.p||[]};delete x.p;if(!x.kmInit){if(!(x.pl["Kamar Mandi"]&&x.pl["Kamar Mandi"].length))x.pl["Kamar Mandi"]=KM.map(a=>({n:a[0],u:a[1],p:a[2],d:""}));x.kmInit=1}x.pl.Makan=x.pl.Makan||[];x.pl["Kamar Mandi"]=x.pl["Kamar Mandi"]||[];return x}
+function cartL(){const l=S.pl[tab]||[],c=CART[tab]||{};return l.map((x,i)=>({n:x.n,u:x.u,p:x.p,q:c[i]||0})).filter(x=>x.q>0)}
+function setQ(i,v){const c=CART[tab]=CART[tab]||{};v=Math.max(0,Math.round((+v||0)*100)/100);if(v)c[i]=v;else delete c[i];render(1)}
+function qty(i,d){setQ(i,((CART[tab]||{})[i]||0)+d)}
+function fq(v){Q[tab]=v;v=v.toLowerCase();document.querySelectorAll(".it").forEach(e=>e.hidden=!e.dataset.n.includes(v))}
+function addM(){const l=cartL();if(!l.length)return;const a=Math.round(l.reduce((t,x)=>t+x.p*x.q,0));S.tx.push({id:Date.now(),d:document.getElementById("fd").value||today(),t:"out",c:tab,n:l.map(x=>x.n+" ×"+x.q+" "+x.u).join(", "),a,it:l});CART[tab]={};save();render(1)}
+function picker(){const l=S.pl[tab]||[],c=CART[tab]||{},q=(Q[tab]||"").toLowerCase();let tot=0,cnt=0;
+const h=l.map((x,i)=>{const n=c[i]||0;tot+=n*x.p;if(n)cnt++;const nm=x.n.toLowerCase();
+return `<div class="it${n?" on":""}" data-n="${esc(nm)}" ${q&&!nm.includes(q)?"hidden":""}><div><b>${esc(x.n)}</b><div class=n>${rp(x.p)} / ${esc(x.u)}${n?` · <span class=cy>${rp(n*x.p)}</span>`:""}</div></div>`+(n?`<div class=sp><button onclick="qty(${i},-1)">−</button><input type=number step=any inputmode=decimal value="${n}" onchange="setQ(${i},this.value)"><button onclick="qty(${i},1)">+</button></div>`:`<button class=add onclick="qty(${i},1)">+ Pilih</button>`)+`</div>`}).join("");
+return `<input class=sq placeholder="Cari item..." value="${esc(Q[tab]||"")}" oninput="fq(this.value)"><div class=il>${h||'<div class=n>Belum ada item. Tambahkan lewat daftar harga di bawah.</div>'}</div><div class=bk><div><div class=n>${cnt} item dipilih</div><div class="o cy">${rp(tot)}</div></div><button onclick="addM()" ${cnt?"":"disabled"}>Tambah +</button></div>`}
+async function save(){try{if(doc)await doc.set(S)}catch(e){}}
 const mt=()=>S.tx.filter(x=>x.d.startsWith(mon));
 const sum=(a,t,c)=>a.filter(x=>x.t==t&&(!c||x.c==c)).reduce((s,x)=>s+x.a,0);
-function rows(l){return `<div class=sc><table><tr><th>Tanggal<th>Kategori<th>Catatan<th class=r>Jumlah<th></tr>`+
-l.sort((a,b)=>b.d.localeCompare(a.d)||b.id-a.id).map(x=>`<tr><td>${x.d.slice(5)}<td>${esc(x.c)}<td>${esc(x.n)}<td class="r ${x.t}">${x.t=="in"?"+":"-"}${rp(x.a)}<td class=r><button class=x1 onclick="del(${x.id})">×</button></tr>`).join("")+(l.length?"":`<tr><td colspan=5 class=n>Belum ada data bulan ini.</tr>`)+`</table></div>`}
+function rows(l){return `<div class=sc><table class=st><tr><th>Tanggal<th>Kategori<th>Catatan<th class=r>Jumlah<th></tr>`+
+l.sort((a,b)=>b.d.localeCompare(a.d)||b.id-a.id).map(x=>`<tr><td data-label="Tanggal">${x.d.slice(5)}<td data-label="Kategori">${esc(x.c)}<td data-label="Catatan">${esc(x.n)}<td data-label="Jumlah" class="r ${x.t}">${x.t=="in"?"+":"-"}${rp(x.a)}<td class=r><button class=x1 onclick="del(${x.id})">×</button></tr>`).join("")+(l.length?"":`<tr><td colspan=5 class=n>Belum ada data bulan ini.</tr>`)+`</table></div>`}
 const form=(t,fc)=>`<div class=f><input type=date id=fd value="${today()}"><select id=fc ${fc?"disabled":""}>${(t=="in"?I:C).map(c=>`<option ${c==fc?"selected":""}>${esc(c)}</option>`).join("")}</select><input id=fn placeholder="Catatan"><input id=fa type=number inputmode=numeric placeholder="Jumlah (Rp)"><button onclick="add('${t}')">+ Tambah</button></div>`;
 function add(t){const a=+document.getElementById("fa").value;if(!a||a<=0)return;
 S.tx.push({id:Date.now(),d:document.getElementById("fd").value||today(),t,c:document.getElementById("fc").value,n:document.getElementById("fn").value,a});save();render(1)}
 function del(id){S.tx=S.tx.filter(x=>x.id!=id);save();render(1)}
 function setG(v){S.gaji=+v||0;save();render(1)}
 function setB(i,v){S.b[C[i]]=+v||0;save();render(1)}
-function setP(i,v){S.p[i].p=+v||0;S.p[i].d=today();save();render(1)}
-function addP(){const n=document.getElementById("pn").value.trim(),p=+document.getElementById("pp").value;if(!n||!p)return;S.p.push({n,u:document.getElementById("pu").value||"kg",p,d:today()});save();render(1)}
-function delP(i){S.p.splice(i,1);save();render(1)}
+function setP(i,v){const x=S.pl[tab][i];x.p=+v||0;x.d=today();save();render(1)}
+function addP(){const n=document.getElementById("pn").value.trim(),p=+document.getElementById("pp").value;if(!n||!p)return;S.pl[tab].push({n,u:document.getElementById("pu").value||"pcs",p,d:today()});save();render(1)}
+function delP(i){S.pl[tab].splice(i,1);CART[tab]={};save();render(1)}
 function view(){const tx=mt(),inc=sum(tx,"in"),out=sum(tx,"out"),sisa=inc-out;
-const cards=`<div class=g><div class=cd><div class=k>PEMASUKAN</div><div class="v in">${rp(inc)}</div></div><div class=cd><div class=k>PENGELUARAN</div><div class="v out">${rp(out)}</div></div><div class=cd><div class=k>SISA SALDO</div><div class="v ${sisa<0?"out":"cy"}">${rp(sisa)}</div></div></div>`;
-if(tab=="Ringkasan"){return cards+`<div class=g><div class=cd><h2>PORSI PENGELUARAN</h2><div class=cv><canvas id=c1></canvas></div></div><div class=cd><h2>ANGGARAN VS REALISASI</h2><div class=cv><canvas id=c2></canvas></div></div></div>
-<div class=cd><h2>STATUS ANGGARAN</h2><div class=sc><table><tr><th>Kategori<th class=r>Anggaran<th class=r>Terpakai<th class=r>Sisa<th>%</tr>`+C.map(c=>{const b=bud(c),s=sum(tx,"out",c),p=b?s/b*100:0;return `<tr><td>${esc(c)}<td class=r>${rp(b)}<td class=r>${rp(s)}<td class="r ${b-s<0?"out":"in"}">${rp(b-s)}<td><div class=bar><i class="${p>100?"x":""}" style="width:${Math.min(p,100)}%"></i></div></tr>`}).join("")+`</table></div></div>`}
+const cards=`<div class="g s"><div class=cd><div class=k>PEMASUKAN</div><div class="v in">${rp(inc)}</div></div><div class=cd><div class=k>PENGELUARAN</div><div class="v out">${rp(out)}</div></div><div class=cd><div class=k>SISA SALDO</div><div class="v ${sisa<0?"out":"cy"}">${rp(sisa)}</div></div></div>`;
+if(tab=="Ringkasan"){return cards+`<div class="g c"><div class=cd><h2>PORSI PENGELUARAN</h2><div class="cv d"><canvas id=c1></canvas></div></div><div class=cd><h2>ANGGARAN VS REALISASI</h2><div class="cv t"><canvas id=c2></canvas></div></div></div>
+<div class=cd><h2>STATUS ANGGARAN</h2><div class=sc><table class=st><tr><th>Kategori<th class=r>Anggaran<th class=r>Terpakai<th class=r>Sisa<th>%</tr>`+C.map(c=>{const b=bud(c),s=sum(tx,"out",c),p=b?s/b*100:0;return `<tr><td data-label="Kategori">${esc(c)}<td data-label="Anggaran" class=r>${rp(b)}<td data-label="Terpakai" class=r>${rp(s)}<td data-label="Sisa" class="r ${b-s<0?"out":"in"}">${rp(b-s)}<td data-label="Progres"><div class=bar><i class="${p>100?"x":""}" style="width:${Math.min(p,100)}%"></i></div></tr>`}).join("")+`</table></div></div>`}
 if(tab=="Pemasukan")return cards+`<div class=cd><h2>CATAT PEMASUKAN</h2>${form("in")}${rows(tx.filter(x=>x.t=="in"))}</div>`;
 if(tab=="Pengeluaran"){const fl=["Semua",...C];return cards+`<div class=cd><h2>CATAT PENGELUARAN</h2>${form("out")}<select onchange="fcat=this.value;render(1)" style="margin-bottom:10px">${fl.map(c=>`<option ${c==fcat?"selected":""}>${esc(c)}</option>`).join("")}</select>${rows(tx.filter(x=>x.t=="out"&&(fcat=="Semua"||x.c==fcat)))}</div>`}
-if(tab=="Makan"){const b=bud("Makan"),s=sum(tx,"out","Makan");return `<div class=g><div class=cd><div class=k>ANGGARAN MAKAN</div><div class="v cy">${rp(b)}</div></div><div class=cd><div class=k>TERPAKAI</div><div class="v out">${rp(s)}</div></div><div class=cd><div class=k>SISA</div><div class="v ${b-s<0?"out":"in"}">${rp(b-s)}</div></div></div>
-<div class=cd style="margin-bottom:12px"><h2>HARGA BAHAN POKOK</h2><div class=n>Harga awal hanya perkiraan dan belum terhubung ke data harga live. Ubah sesuai harga pasar terbaru, tanggalnya otomatis tercatat.</div><div class=sc><table><tr><th>Bahan<th>Satuan<th class=r>Harga (Rp)<th>Diperbarui<th></tr>`+S.p.map((x,i)=>`<tr><td>${esc(x.n)}<td>${esc(x.u)}<td><input type=number value="${x.p}" onchange="setP(${i},this.value)"><td>${x.d||"perkiraan"}<td><button class=x1 onclick="delP(${i})">×</button></tr>`).join("")+`</table></div>
-<div class=f style="margin-top:10px"><input id=pn placeholder="Bahan baru"><input id=pu placeholder="Satuan"><input id=pp type=number placeholder="Harga"><button onclick="addP()">+ Harga</button></div></div>
-<div class=cd><h2>CATAT MAKAN</h2>${form("out","Makan")}${rows(tx.filter(x=>x.t=="out"&&x.c=="Makan"))}</div>`}
+if(tab=="Makan"||tab=="Kamar Mandi"){const b=bud(tab),s=sum(tx,"out",tab),l=S.pl[tab]||[],U=tab.toUpperCase(),hn=tab=="Makan"?"BAHAN POKOK":"KEBUTUHAN KAMAR MANDI";
+const pt=`<div class=sc><table class=st><tr><th>Item<th>Satuan<th class=r>Harga (Rp)<th>Diperbarui<th></tr>`+l.map((x,i)=>`<tr><td data-label="Item">${esc(x.n)}<td data-label="Satuan">${esc(x.u)}<td data-label="Harga (Rp)"><input type=number value="${x.p}" onchange="setP(${i},this.value)"><td data-label="Diperbarui">${x.d||"perkiraan"}<td><button class=x1 onclick="delP(${i})">×</button></tr>`).join("")+`</table></div>`;
+return `<div class="g s"><div class=cd><div class=k>ANGGARAN ${U}</div><div class="v cy">${rp(b)}</div></div><div class=cd><div class=k>TERPAKAI</div><div class="v out">${rp(s)}</div></div><div class=cd><div class=k>SISA</div><div class="v ${b-s<0?"out":"in"}">${rp(b-s)}</div></div></div>
+<div class=cd style="margin-bottom:12px"><h2>CATATAN ${U}</h2><div class=f2><input type=date id=fd value="${FD||today()}" onchange="FD=this.value"><select id=fc disabled><option>${esc(tab)}</option></select></div>${picker()}</div>
+<div class=cd style="margin-bottom:12px"><h2>RIWAYAT ${U}</h2>${rows(tx.filter(x=>x.t=="out"&&x.c==tab))}</div>
+<div class=cd><h2>HARGA ${hn}</h2><div class=n>Harga awal hanya perkiraan. Ubah sesuai harga terbaru: tanggal tercatat otomatis dan harga di catatan ikut berubah.</div>${pt}<div class=f style="margin-top:10px"><input id=pn placeholder="Item baru"><input id=pu placeholder="Satuan"><input id=pp type=number placeholder="Harga"><button onclick="addP()">+ Harga</button></div></div>`}
 const al=C.reduce((s,c)=>s+bud(c),0);
-return `<div class=cd><h2>PENGATURAN</h2><div class=n>Gaji bulanan (dasar sedekah 2,5%)</div><input type=number value="${S.gaji}" onchange="setG(this.value)"><div class=n>Sedekah otomatis: ${rp(S.gaji*.025)}</div><div class=sc><table><tr><th>Kategori<th>Anggaran / bulan</tr>`+C.map((c,i)=>`<tr><td>${esc(c)}<td>${c=="Sedekah"?rp(bud(c))+" (otomatis)":`<input type=number value="${S.b[c]}" onchange="setB(${i},this.value)">`}</tr>`).join("")+`</table></div><div class=n>Total teralokasi ${rp(al)} dari gaji ${rp(S.gaji)} — ${S.gaji-al>=0?"belum teralokasi "+rp(S.gaji-al):"melebihi gaji "+rp(al-S.gaji)}</div></div>`}
+return `<div class=cd><h2>PENGATURAN</h2><div class=n>Gaji bulanan (dasar sedekah 2,5%)</div><input type=number value="${S.gaji}" onchange="setG(this.value)"><div class=n>Sedekah otomatis: ${rp(S.gaji*.025)}</div><div class=sc><table class=st><tr><th>Kategori<th>Anggaran / bulan</tr>`+C.map((c,i)=>`<tr><td data-label="Kategori">${esc(c)}<td data-label="Anggaran">${c=="Sedekah"?rp(bud(c))+" (otomatis)":`<input type=number value="${S.b[c]}" onchange="setB(${i},this.value)">`}</tr>`).join("")+`</table></div><div class=n>Total teralokasi ${rp(al)} dari gaji ${rp(S.gaji)} — ${S.gaji-al>=0?"belum teralokasi "+rp(S.gaji-al):"melebihi gaji "+rp(al-S.gaji)}</div></div>`}
 function render(f){if(!S)return;const a=document.activeElement;if(!f&&a&&/INPUT|SELECT/.test(a.tagName)&&a.id!="mon")return;
-document.getElementById("app").innerHTML=`<div class=tabs>${T.map(t=>`<button class="${t==tab?"a":""}" onclick="tab='${t}';render(1)">${t}</button>`).join("")}</div>`+view();
+document.getElementById("app").innerHTML=`<div class=tabs><select class=nav onchange="this.blur();tab=this.value;render(1)">${T.map(t=>`<option ${t==tab?"selected":""}>${t}</option>`).join("")}</select></div>`+view();
 ch.forEach(c=>c.destroy());ch=[];if(tab!="Ringkasan"||!window.Chart)return;
 const tx=mt(),sp=C.map(c=>sum(tx,"out",c));Chart.defaults.color="#8fa3d1";
-ch.push(new Chart(c1,{type:"doughnut",data:{labels:C,datasets:[{data:sp,backgroundColor:COL,borderColor:"#050816"}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}}}}));
-ch.push(new Chart(c2,{type:"bar",data:{labels:C.map((c,i)=>i+1),datasets:[{label:"Anggaran",data:C.map(bud),backgroundColor:"#b967ff"},{label:"Terpakai",data:sp,backgroundColor:"#00e5ff"}]},options:{maintainAspectRatio:false,scales:{y:{ticks:{callback:v=>v/1000+"rb"},grid:{color:"#16224d"}},x:{grid:{display:false}}}}}));}
+ch.push(new Chart(c1,{type:"doughnut",data:{labels:C,datasets:[{data:sp,backgroundColor:COL,borderColor:"#050816"}]},options:{maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{boxWidth:10,font:{size:11}}}}}}));
+ch.push(new Chart(c2,{type:"bar",data:{labels:C.map(c=>c.length>15?c.slice(0,14)+"…":c),datasets:[{label:"Anggaran",data:C.map(bud),backgroundColor:"#b967ff"},{label:"Terpakai",data:sp,backgroundColor:"#00e5ff"}]},options:{indexAxis:"y",maintainAspectRatio:false,scales:{x:{ticks:{callback:v=>v/1000+"rb"},grid:{color:"#16224d"}},y:{grid:{display:false},ticks:{font:{size:10}}}}}}));}
 const mi=document.getElementById("mon");mi.value=mon;mi.onchange=()=>{mon=mi.value||mon;render(1)};
 setInterval(()=>{document.getElementById("clk").textContent=new Date().toLocaleString("id-ID",{dateStyle:"full",timeStyle:"medium"})},1000);
-try{S=JSON.parse(localStorage.getItem("kk"))}catch(e){}S=S||def();render(1);
-(async()=>{try{const d=window.claude&&await claude.use("db");if(!d)return;doc=d.doc("app/state");
-doc.onSnapshot(s=>{if(s.exists){S=JSON.parse(JSON.stringify(s.data()))}else{doc.set(S).catch(()=>{})}
-const l=document.getElementById("lv");l.textContent="● LIVE";l.className="live on";render()},()=>{doc=null})}catch(e){}})();
+
+const FB={apiKey:"AIzaSyAKf9aygffSHMFtkMJ3h_43ql0uic94fVY",authDomain:"uang-kas-320ca.firebaseapp.com",databaseURL:"https://uang-kas-320ca-default-rtdb.asia-southeast1.firebasedatabase.app/",projectId:"uang-kas-320ca",appId:"1:964784128435:web:793cc3c14c922a4fafcbc6"};
+firebase.initializeApp(FB);
+const rt=firebase.database();let off=null;
+function start(k){if(off){off();off=null}
+document.getElementById("lg").hidden=!!k;document.querySelector("header").hidden=!k;document.getElementById("app").hidden=!k;
+if(!k){doc=null;S=null;return}
+const r=rt.ref("kas/"+k);doc=r;
+const h=snap=>{const v=snap.val();if(v){S=mig(v)}else{S=mig(def());r.set(S)}
+const l=document.getElementById("lv");l.textContent="● LIVE";l.className="live on";render()};
+r.on("value",h,e=>{document.getElementById("lv").textContent="● "+(e.code||"error")});off=()=>r.off("value",h)}
+function login(){const k=document.getElementById("em").value.trim(),le=document.getElementById("le");
+if(k.length<12||/[.#$\[\]\/]/.test(k)){le.textContent="Kode minimal 12 karakter, tanpa . # $ [ ] /";return}
+try{localStorage.setItem("kode",k)}catch(e){}start(k)}
+function logout(){try{localStorage.removeItem("kode")}catch(e){}start(null)}
+let k0=null;try{k0=localStorage.getItem("kode")}catch(e){}start(k0);
 </script></body></html>
